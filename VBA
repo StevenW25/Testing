@@ -46,3 +46,17 @@ javascript:(function() {
         alert("The 'I'm Feeling Lucky' button is not available on this page.");
     }
 })();
+
+
+
+# URL where the bookmarklet is used
+$baseURL = "https://www.google.ca"
+
+# JavaScript code for the bookmarklet (encoded as a URL)
+$bookmarklet = "javascript:(function() { var luckyButton = document.querySelector('[name=btnI]'); if (luckyButton) { luckyButton.click(); } else { alert('The I''m Feeling Lucky button is not available on this page.'); } })();"
+
+# Combine the base URL and bookmarklet
+$fullURL = "$baseURL/$bookmarklet"
+
+# Open Edge with the full URL
+Start-Process "msedge.exe" $fullURL
