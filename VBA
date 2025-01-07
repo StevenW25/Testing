@@ -90,3 +90,41 @@ Start-Process $edgePath -ArgumentList "--remote-debugging-port=9222"
     <p>Redirecting to the website...</p>
 </body>
 </html>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Auto-Run JavaScript</title>
+    <script>
+        // Automatically load the website and inject JavaScript
+        window.onload = function() {
+            // Open the desired website
+            const targetURL = "https://example.com"; // Replace with the target URL
+            const jsCode = `
+                // Your bookmarklet code here
+                alert('JavaScript running!');
+                document.body.style.border = '5px solid green';
+            `;
+
+            // Open the website in an iframe
+            const iframe = document.createElement('iframe');
+            iframe.src = targetURL;
+            iframe.style = "width: 100%; height: 100vh; border: none;";
+            document.body.appendChild(iframe);
+
+            // Wait for the iframe to load and inject the script
+            iframe.onload = function() {
+                const script = iframe.contentDocument.createElement('script');
+                script.textContent = jsCode;
+                iframe.contentDocument.body.appendChild(script);
+            };
+        };
+    </script>
+</head>
+<body>
+    <p>Loading the website...</p>
+</body>
+</html>
+
