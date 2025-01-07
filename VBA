@@ -67,3 +67,26 @@ $edgePath = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 
 # Launch Edge with remote debugging on port 9222
 Start-Process $edgePath -ArgumentList "--remote-debugging-port=9222"
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Auto Bookmarklet</title>
+    <script>
+        window.onload = function() {
+            // Open the desired website
+            window.location.href = "https://example.com";
+
+            // Wait for the website to load and execute the bookmarklet code
+            setTimeout(function() {
+                // Your bookmarklet code here
+                alert("Bookmarklet running!");
+            }, 3000); // Adjust the delay as needed
+        };
+    </script>
+</head>
+<body>
+    <p>Redirecting to the website...</p>
+</body>
+</html>
