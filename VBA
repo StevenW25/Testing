@@ -1,0 +1,39 @@
+Sub LaunchEdgeAndSearchGoogle()
+    Dim url As String
+    Dim searchQuery As String
+    Dim script As String
+    Dim shell As Object
+    
+    ' URL to navigate to (Google)
+    url = "https://www.google.com"
+    
+    ' Search query
+    searchQuery = "Best Buy"
+    
+    ' PowerShell script to launch Edge, navigate to the URL, and perform search
+    script = "Start-Process 'msedge.exe' '" & url & "'; " & _
+             "Start-Sleep -Seconds 3; " & _
+             "$wshell = New-Object -ComObject wscript.shell; " & _
+             "Start-Sleep -Seconds 5; " & _
+             "$wshell.SendKeys('^l'); " & _
+             "Start-Sleep -Seconds 5; " & _
+             "$wshell.SendKeys('^a'); " & _
+            "Start-Sleep -Seconds 5; " & _
+             "$wshell.SendKeys(''); " & _
+            "Start-Sleep -Seconds 5; " & _
+             "$wshell.SendKeys('" & url & "'); " & _
+            "Start-Sleep -Seconds 5; " & _
+             "$wshell.SendKeys('{ENTER}'); " & _
+            "Start-Sleep -Seconds 2; " & _
+             "$wshell.SendKeys('" & searchQuery & "'); " & _
+             "$wshell.SendKeys('{ENTER}');"
+    
+    ' Create Shell object to run the PowerShell script
+    Set shell = CreateObject("WScript.Shell")
+    
+    ' Run the PowerShell script
+    shell.Run "powershell -Command " & Chr(34) & script & Chr(34), 1, True
+    
+    ' Clean up
+    Set shell = Nothing
+End Sub
