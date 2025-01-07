@@ -37,3 +37,12 @@ Sub LaunchEdgeAndSearchGoogle()
     ' Clean up
     Set shell = Nothing
 End Sub
+
+javascript:(function() {
+    var luckyButton = document.querySelector("[name='btnI']");
+    if (luckyButton) {
+        luckyButton.click();
+    } else {
+        alert("The 'I'm Feeling Lucky' button is not available on this page.");
+    }
+})();
