@@ -155,3 +155,25 @@ Sub ExecuteJavaScriptInEdge()
     Set ws = CreateObject("WScript.Shell")
     ws.Run cmd
 End Sub
+
+Sub OpenEdgeInIEMode()
+    Dim ie As Object
+    Set ie = CreateObject("InternetExplorer.Application")
+    
+    ' Make the browser visible
+    ie.Visible = True
+    
+    ' Navigate to a URL
+    ie.Navigate "https://www.google.com"
+    
+    ' Wait for the page to load
+    Do While ie.Busy Or ie.ReadyState <> 4
+        DoEvents
+    Loop
+    
+    MsgBox "Page Title: " & ie.Document.Title
+    
+    ' Close the browser
+    ie.Quit
+    Set ie = Nothing
+End Sub
