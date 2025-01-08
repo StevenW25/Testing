@@ -128,3 +128,30 @@ Start-Process $edgePath -ArgumentList "--remote-debugging-port=9222"
 </body>
 </html>
 
+
+edge://settings/defaultBrowser
+
+
+
+
+& "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --remote-debugging-port=9222
+
+
+
+
+
+Sub ExecuteJavaScriptInEdge()
+    Dim ws As Object
+    Dim cmd As String
+    Dim jsScript As String
+    
+    ' JavaScript code to execute
+    jsScript = "document.body.style.backgroundColor = 'lightblue';"
+    
+    ' Command to execute PowerShell with the JavaScript
+    cmd = "powershell -Command ""Invoke-RestMethod -Uri http://localhost:9222/json/execute -Method POST -Body '{""id"":1,""method"":""Runtime.evaluate"",""params"":{""expression"":""" & jsScript & """}}'"""
+    
+    ' Run the command
+    Set ws = CreateObject("WScript.Shell")
+    ws.Run cmd
+End Sub
