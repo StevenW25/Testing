@@ -1,4 +1,4 @@
-Sub LaunchEdgeAndSearchGoogle()
+uhSub LaunchEdgeAndSearchGoogle()
     Dim url As String
     Dim searchQuery As String
     Dim script As String
@@ -176,4 +176,16 @@ Sub OpenEdgeInIEMode()
     ' Close the browser
     ie.Quit
     Set ie = Nothing
+End Sub
+
+
+
+Private Sub ExecuteJavaScript_Click()
+    Dim jsCode As String
+
+    ' Define your JavaScript code
+    jsCode = "document.body.style.backgroundColor = 'yellow';"
+
+    ' Call the ExecuteJavaScript method
+    Me.EdgeBrowserControl.ExecuteJavaScript jsCode
 End Sub
