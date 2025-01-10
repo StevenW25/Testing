@@ -189,3 +189,25 @@ Private Sub ExecuteJavaScript_Click()
     ' Call the ExecuteJavaScript method
     Me.EdgeBrowserControl.ExecuteJavaScript jsCode
 End Sub
+
+
+Option Explicit
+
+Private Declare PtrSafe Function SetThreadExecutionState Lib "Kernel32.dll" (ByVal esFlags As Long) As Long
+
+Const ES_SYSTEM_REQUIRED As Long = &H1
+Const ES_DISPLAY_REQUIRED As Long = &H2
+Const ES_CONTINUOUS As Long = &H80000000
+
+' Enable away mode and prevent the sleep idle time-out. Called periodically this is needed (every 59 sec, change to longer interval if you want)
+' I've this sub called in Workbook_Open
+Public Sub PreventLocking()
+    SetThreadExecutionState ES_CONTINUOUS Or ES_DISPLAY_REQUIRED Or ES_SYSTEM_REQUIRED
+    Application.OnTime EarliestTime:=Now + TimeValue("00:00:59"), Procedure:="PreventLocking"
+End Sub
+
+' Clear flags to disable away mode and allow the system to idle to sleep normally.
+' I've this sub called in Workbook_BeforeClose, but it would probably be fine even w/o it
+Public Sub ClearLockingFlags()
+    SetThreadExecutionState ES_CONTINUOUS
+End Sub
