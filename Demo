@@ -1,0 +1,111 @@
+Sub TestEdgeIeMode()
+'----------------------------------------------------------------------------------
+' Note : Make sure that the target webpage is already loaded in
+'        Edge Ie Mode before running this.
+' Guide: 1. First run "taskkill /f /im msedge.exe" in cmd to close all
+'           hidden edge instances.
+'        2. Load this url "https://www.hsbc.com.sg/security/" with Edge IE Mode.
+'        3. Execute this procedure. If successful, it will attempt to input into
+'           the username field.
+'----------------------------------------------------------------------------------
+
+   'Verify if target window is found
+    titleToFind = "Username | Log on | HSBC"
+    Set ieDoc = GetEdgeIeDOM(titleToFind)
+    If ieDoc Is Nothing Then
+        MsgBox "The webpage cannot be found on Edge IE Mode! Has it been loaded under Edge IE Mode?"
+        End
+    End If
+
+   'If found, perform automation
+    ieDoc.getElementById("username").Value = "Test Successful!!"
+
+End Sub
+
+
+Sub DemoWithUIA()
+'----------------------------------------------------------------------------------
+' Note : This example makes use of the global variable ieHwnd to get access to the
+'        correct Edge IE Mode window. This is useful for UIA and Win APIs.
+'        This demo requires UIAutomationClient reference.
+'----------------------------------------------------------------------------------
+
+   'First open this page in Edge IE Mode, then run this procedure
+   'https://file-examples.com/wp-content/uploads/2017/10/file-sample_150kB.pdf
+            
+    Dim ieDoc As HTMLDocument
+    titleToFind = "File Examples"
+    Set ieDoc = GetEdgeIeDOM(titleToFind)
+    
+    Dim oCUIA As New CUIAutomation
+    Dim ieWindow As IUIAutomationElement
+    Dim uiCond As IUIAutomationCondition
+    Dim saveBtn As IUIAutomationElement
+    
+    Set ieWindow = oCUIA.ElementFromHandle(ByVal ieHwnd)
+    Set uiCond = oCUIA.CreatePropertyCondition(UIA_NamePropertyId, "Save")
+    Set saveBtn = ieWindow.FindFirst(TreeScope_Descendants, uiCond)
+    If Not saveBtn Is Nothing Then Debug.Print "Element found successfully."
+    
+End Sub
+
+Sub RunJavaScriptInEdgeIE()
+    Dim webDoc As Object
+    Dim windowTitle As String
+    Dim jsCode As String
+
+    ' Set the title of the target Edge IE Mode window
+    windowTitle = "Username | Log on | HSBC"
+
+    ' JavaScript code to execute
+    jsCode = "alert('Hello from VBA!');"
+
+    ' Get the DOM object
+    Set webDoc = GetEdgeIeDOM(windowTitle)
+    
+    If Not webDoc Is Nothing Then
+        ' Execute the JavaScript
+        On Error Resume Next
+        webDoc.parentWindow.execScript jsCode, "JavaScript"
+        If Err.Number <> 0 Then
+            MsgBox "Error executing JavaScript: " & Err.Description, vbCritical
+        Else
+            MsgBox "JavaScript executed successfully!", vbInformation
+        End If
+        On Error GoTo 0
+    Else
+        MsgBox "Unable to retrieve the DOM object. Ensure the window is open and accessible.", vbExclamation
+    End If
+End Sub
+
+
+Sub ClickImFeelingLucky()
+    Dim webDoc As Object
+    Dim windowTitle As String
+    Dim jsCode As String
+
+    ' Set the title of the target Edge IE Mode window
+    windowTitle = "Google" ' Change to match the title of your Google browser window
+
+    ' JavaScript code to click the "I'm Feeling Lucky" button
+    jsCode = "document.querySelector('input[name=""btnI""]').click();"
+
+    ' Get the DOM object
+    Set webDoc = GetEdgeIeDOM(windowTitle)
+    
+    If Not webDoc Is Nothing Then
+        ' Execute the JavaScript
+        On Error Resume Next
+        webDoc.parentWindow.execScript jsCode, "JavaScript"
+        If Err.Number <> 0 Then
+            MsgBox "Error executing JavaScript: " & Err.Description, vbCritical
+        Else
+            MsgBox "Clicked 'I'm Feeling Lucky' successfully!", vbInformation
+        End If
+        On Error GoTo 0
+    Else
+        MsgBox "Unable to retrieve the DOM object. Ensure the window is open and accessible.", vbExclamation
+    End If
+    
+    'edge://settings/defaultBrowser
+End Sub
