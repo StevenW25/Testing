@@ -211,3 +211,25 @@ End Sub
 Public Sub ClearLockingFlags()
     SetThreadExecutionState ES_CONTINUOUS
 End Sub
+
+
+Option Explicit
+
+Private Declare PtrSafe Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" ( _
+    ByVal hWnd As LongPtr, _
+    ByVal Operation As String, _
+    ByVal Filename As String, _
+    Optional ByVal Parameters As String, _
+    Optional ByVal Directory As String, _
+    Optional ByVal WindowStyle As Long = vbMinimizedFocus _
+) As LongPtr
+
+Public Sub OpenUrl()
+    Dim lSuccess As LongPtr
+    lSuccess = ShellExecute(0, "Open", "http://www.google.com")
+    If lSuccess <= 32 Then
+        MsgBox "Failed to open URL.", vbExclamation, "Error"
+    End If
+End Sub
+
+
