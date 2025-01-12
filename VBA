@@ -233,3 +233,48 @@ Public Sub OpenUrl()
 End Sub
 
 
+Option Explicit
+
+Private Declare PtrSafe Function OpenProcess Lib "kernel32" ( _
+    ByVal dwDesiredAccess As Long, _
+    ByVal bInheritHandle As Long, _
+    ByVal dwProcessId As Long) As LongPtr
+
+Private Declare PtrSafe Function TerminateProcess Lib "kernel32" ( _
+    ByVal hProcess As LongPtr, _
+    ByVal uExitCode As Long) As Long
+
+Private Declare PtrSafe Function CloseHandle Lib "kernel32" ( _
+    ByVal hObject As LongPtr) As Long
+
+Private Const PROCESS_TERMINATE As Long = &H1
+
+Public Sub OpenAndCloseShell()
+    Dim taskID As Long
+    Dim hProcess As LongPtr
+    Dim success As Long
+    
+    ' Open a shell process (e.g., Notepad)
+    taskID = Shell("notepad.exe", vbNormalFocus)
+    
+    ' Give some time for the process to start
+    Application.Wait Now + TimeValue("00:00:03")
+    
+    ' Open the process with terminate rights
+    hProcess = OpenProcess(PROCESS_TERMINATE, False, taskID)
+    If hProcess = 0 Then
+        MsgBox "Failed to get process handle.", vbExclamation, "Error"
+        Exit Sub
+    End If
+    
+    ' Terminate the process
+    success = TerminateProcess(hProcess, 0)
+    If success = 0 Then
+        MsgBox "Failed to terminate process.", vbExclamation, "Error"
+    Else
+        MsgBox "Process terminated successfully.", vbInformation, "Success"
+    End If
+    
+    ' Close the process handle
+    CloseHandle hProcess
+End Sub
