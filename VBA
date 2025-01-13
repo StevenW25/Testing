@@ -441,3 +441,48 @@ Public Sub TestBrowserFunctions()
     ' Close the browser
     success = CloseBrowser(commandLine)
 End Sub
+
+Sub ClickImFeelingLuckyAndClose()
+    Dim webDoc As Object
+    Dim windowTitle As String
+    Dim jsCode As String
+
+    ' Set the title of the target Edge IE Mode window
+    windowTitle = "Google" ' Change to match the title of your Google browser window
+
+    ' JavaScript code to click the "I'm Feeling Lucky" button
+    jsCode = "document.querySelector('input[name=""btnI""]').click();"
+
+    ' Get the DOM object
+    Set webDoc = GetEdgeIeDOM(windowTitle)
+    
+    If Not webDoc Is Nothing Then
+        ' Execute the JavaScript
+        On Error Resume Next
+        webDoc.parentWindow.execScript jsCode, "JavaScript"
+        If Err.Number <> 0 Then
+            MsgBox "Error executing JavaScript: " & Err.Description, vbCritical
+        Else
+            MsgBox "Clicked 'I'm Feeling Lucky' successfully!", vbInformation
+        End If
+        On Error GoTo 0
+        
+        ' Close the Google window
+        If ieHwnd <> 0 Then
+            CloseWindow ieHwnd
+            MsgBox "Closed Google.com window successfully!", vbInformation
+        Else
+            MsgBox "Unable to retrieve the window handle for closing.", vbExclamation
+        End If
+    Else
+        MsgBox "Unable to retrieve the DOM object. Ensure the window is open and accessible.", vbExclamation
+    End If
+End Sub
+
+Sub CloseWindow(ByVal hwnd As LongPtr)
+    ' Sends WM_CLOSE to the specified window handle
+    Const WM_CLOSE As Long = &H10
+    Dim result As Long
+
+    result = SendMessage(hwnd, WM_CLOSE, 0&, 0&)
+End Sub
