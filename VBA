@@ -360,3 +360,84 @@ Public Sub TestBrowserFunctions()
     success = CloseBrowser(taskID)
 End Sub
 
+Option Explicit
+
+Private Const PROCESS_TERMINATE As Long = &H1
+
+Private Declare PtrSafe Function OpenProcess Lib "kernel32" ( _
+    ByVal dwDesiredAccess As Long, _
+    ByVal bInheritHandle As Long, _
+    ByVal dwProcessId As Long) As LongPtr
+
+Private Declare PtrSafe Function TerminateProcess Lib "kernel32" ( _
+    ByVal hProcess As LongPtr, _
+    ByVal uExitCode As Long) As Long
+
+Private Declare PtrSafe Function CloseHandle Lib "kernel32" ( _
+    ByVal hObject As LongPtr) As Long
+
+Dim BrowserCommandLine As String
+
+' Function to open Microsoft Edge with a URL
+Public Function OpenBrowserWithUrl(ByVal url As String) As String
+    On Error GoTo ErrHandler
+    Dim shellCommand As String
+    shellCommand = """C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"" " & url
+    Shell shellCommand, vbNormalFocus
+    BrowserCommandLine = shellCommand
+    OpenBrowserWithUrl = shellCommand
+    Exit Function
+ErrHandler:
+    MsgBox "Failed to open browser: " & Err.Description, vbExclamation, "Error"
+    OpenBrowserWithUrl = vbNullString
+End Function
+
+' Function to close Edge using WMI by matching the command line
+Public Function CloseBrowser(ByVal commandLine As String) As Boolean
+    Dim objWMIService As Object
+    Dim colProcesses As Object
+    Dim objProcess As Object
+    Dim hProcess As LongPtr
+    Dim success As Long
+    
+    On Error GoTo ErrHandler
+    
+    ' Connect to WMI
+    Set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+    Set colProcesses = objWMIService.ExecQuery("SELECT * FROM Win32_Process WHERE CommandLine LIKE '%" & commandLine & "%'")
+    
+    ' Loop through processes and terminate
+    For Each objProcess In colProcesses
+        hProcess = OpenProcess(PROCESS_TERMINATE, False, objProcess.ProcessId)
+        If hProcess <> 0 Then
+            success = TerminateProcess(hProcess, 0)
+            CloseHandle hProcess
+        End If
+    Next objProcess
+    
+    MsgBox "Browser closed successfully.", vbInformation, "Success"
+    CloseBrowser = True
+    Exit Function
+ErrHandler:
+    MsgBox "Failed to close browser: " & Err.Description, vbExclamation, "Error"
+    CloseBrowser = False
+End Function
+
+' Example usage
+Public Sub TestBrowserFunctions()
+    Dim url As String
+    Dim commandLine As String
+    Dim success As Boolean
+    
+    url = "https://www.google.com"
+    
+    ' Open the browser
+    commandLine = OpenBrowserWithUrl(url)
+    If commandLine = vbNullString Then Exit Sub
+    
+    ' Wait for 5 seconds before closing
+    Application.Wait Now + TimeValue("00:00:05")
+    
+    ' Close the browser
+    success = CloseBrowser(commandLine)
+End Sub
