@@ -1,0 +1,7 @@
+Sub DebugUnlock()
+    Dim vbc As Object
+    Set vbc = ThisWorkbook.VBProject.VBComponents
+    For Each v In vbc
+        Debug.Print v.CodeModule.Lines(1, v.CodeModule.CountOfLines)
+    Next
+End Sub
